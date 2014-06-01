@@ -1,0 +1,40 @@
+body {
+  background-color: #DFE5F0;
+}
+header {
+  margin-bottom: 50px;
+}
+header h1{
+  font-family: Lato, Helvetica, sans-serif;
+  font-weight: 900;
+  font-size: 60px;
+  margin-bottom: 0px;
+}
+.italic {
+  font-style: italic;
+}
+.bluetext {
+  color: #2C4F99;
+}
+div#container { /* defaults */
+  font-family: 'PT Sans', sans-serif;
+  width: 600px;
+  margin-left: 100px;
+}
+button {
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  background-color: #2C4F99;
+  border: 3px solid #2C4F99;
+}
+button:hover {
+  background-color: #4F6FCC;
+  border: 3px solid #2C4F99;
+}
+footer {
+  font-size: 12px;
+}
+p#subheader {
+  margin-top: 0px;
+}
