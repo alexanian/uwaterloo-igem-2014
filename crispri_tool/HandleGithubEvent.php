@@ -1,14 +1,31 @@
+{
+    "Result" : "<?php
+
 $JSONString = file_get_contents('php://input');
-$JSONObject = json_decode($input);
+$JSONObject = json_decode($JSONString);
 
 if( json_last_error() === JSON_ERROR_NONE )
 {
-    if( fnmatch( "*/tool_beta", $JSONString['ref'], FNM_PATHNAME ) )
+    if( isset( $JSONObject->ref ) )
     {
-        $GitResult = `git pull -f`;
+        if( fnmatch( "*/tool_beta", $JSONObject->ref ) )
+        {
+            echo `git pull -f`;
+        }
+        else
+        {
+            echo "Not going to publish, wasn't a push to tool_beta branch.";
+        }
+    }
+    else
+    {
+        echo "Wasn't expecting the input given. Missing ref.";
     }
 }
 else
 {
-    header('HTTP/1.0 404 Not Found');
+    echo "JSON object was invalid.";
+}
+
+?>"
 }
