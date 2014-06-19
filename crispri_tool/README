@@ -1,0 +1,11 @@
+uwaterloo-igem-2014
+crispri-tool
+===================
+
+Requirements
+    - HTTP Server with a PHP module installed
+    - PHP 5.4 (MySQL native drivers are in suite)
+    - MySQL
+    
+Setup
+    The SQL script in /sql can be executed in mysql to get a fresh clean target database for use with the application.
