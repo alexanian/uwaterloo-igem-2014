@@ -1,0 +1,126 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<!-- Meta info -->
+	<meta charset="utf-8">
+	<title>Home</title>
+	<meta name="description" content="Home">
+	
+	<!-- DataTables and jQuery -->
+	<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+	<script src="js/jquery.js"></script>	
+	<script src="js/jquery.dataTables.js"></script>
+	
+	<!-- JavaScript for this page -->
+	<script src="js/navigation.js"></script>		<!-- Specifies what to do when the page loads -->
+	<script src="js/dynamic_forms.js"></script>		<!-- Allows to add/delete rows for genes -->
+	<script src="js/late_fxns.js"></script>			<!-- Helper functions for processing the plasmid -->
+	
+</head>
+
+<body>
+<div id="header">
+	<h2>CRISPRi Design Tool</h2>
+</div>
+
+<div id ="container">
+	
+	<!-- Section I -->
+	<div id="entryHeader">
+		<h3>Input Sequences</h3>
+	</div>
+	
+	<div id="inputContainer">
+		This web app may be used to locate target sites for CRISPRi<br>
+		<form id="inputData" action="php/processor.php" method="post" name="main">
+			Please enter the PAM sequence:
+			<input id="pamseq" type="text" name="pamseq"><br><br>
+			
+			<input type="button" value="Add Row" onclick="addRow('inputTable')" />
+			<input type="button" value="Delete Row" onclick="deleteRow('inputTable')" />
+			
+			<table id="inputTable" border="1">
+				<th>Select</th>
+				<th>Gene Name</th>
+				<th>Promoter (Coding Strand)</th>
+				<th>Gene (Coding Strand)</th>
+				
+				<tr>
+					<td><input type="checkbox" name="chk[]"/></td>
+					<td><input id="genenames" type="text" name="GENnames[]"/></td>
+					<td><textarea id="promoters" name="PROs[]" rows="8" cols="40"></textarea></td>
+					<td><textarea id="genes" name="GENs[]" rows="8" cols="80"></textarea></td>
+				</tr>
+			</table><br>
+			<input type="submit" id="submitButton"  name="submitButton" value="Submit">
+			<!--<input type="button" id="gettable" name="gettable" value="Submit" class="btn btn-custom"/> -->
+			Hit submit and we will process your sequences
+		</form>
+	</div>
+	
+	
+	<!-- Section II -->
+	<div id="resultsHeader">
+		<h3>Results Table</h3>
+	</div>
+	
+	<div id="resultsContainer">
+		<div>
+			<input type="button" id="returnInput" value="Modify Search">
+			<br><br>
+		</div>
+				
+		<div id="phpHere">
+	        <table id="results" class="display">
+	            <thead>
+	                <th>Gene Name</th>
+	                <th>Strand</th>
+	                <th>Position</th>
+	                <th>sgRNA</th>
+	            </thead>
+	        </table>
+		</div>
+		
+		<!--
+		<script type="text/javascript">
+		var tog = complement("agag");
+		document.getElementById("tester").innerHTML = tog;
+		</script>
+		-->
+		
+		<div>
+			<input type="button" id="viewPlasmid" value="Compute Expected Repression">
+			<br><br>
+		</div>
+		
+	</div>
+	
+	
+	<!-- Section III -->
+	<div id="plasmidHeader">
+		<h3>Plasmid View</h3>
+	</div>
+	
+	<div id="plasmidContainer">
+		<div>
+			<input type="button" id="returnTable" value="Select new targets">
+			<br><br>
+		</div>
+		
+		<div>
+			The expected repression is: __________
+		</div>
+		
+		<div>
+			<canvas id="cartoonPlasmid" width="250" height="250"></canvas>
+		</div>
+			
+		</div>
+	
+	</div>
+	
+</div>
+
+</body>
+</html>
