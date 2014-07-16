@@ -16,21 +16,45 @@ header h1{
 .bluetext {
   color: #2C4F99;
 }
-div#container { /* defaults */
+div#body_wrapper { /* defaults */
   font-family: 'PT Sans', sans-serif;
-  width: 600px;
-  margin-left: 100px;
+  width: 85%;
+  margin-left: 50px;
 }
-button {
+div#container {
+   max-width: 100%;
+}
+form#inputData{
+   max-width:100%;
+}
+div#pamseq {
+    display: inline;
+}
+table#inputTable {
+   width:100%;
+   border-color: black;
+   border-collapse: collapse;
+}
+#inputTable td {
+   padding: 2px;
+}
+#inputTable th {
+    color:white;
+	background-color: #2C4F99;
+}
+.button {
   color: white;
   font-weight: bold;
   text-transform: uppercase;
   background-color: #2C4F99;
   border: 3px solid #2C4F99;
 }
-button:hover {
-  background-color: #4F6FCC;
+.button:hover {
+  background-color: #191975;
   border: 3px solid #2C4F99;
+}
+#submitButton {
+    font-size: 1em;
 }
 footer {
   font-size: 12px;

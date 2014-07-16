@@ -1,14 +1,18 @@
 <!doctype html>
-
 <html lang="en">
 <head>
 	<!-- Meta info -->
 	<meta charset="utf-8">
-	<title>Home</title>
-	<meta name="description" content="Home">
+	<title> CRISPRecise: a tool for CRISPRi target selection </title>
+	<meta name="description" content="CRISPRecise">
 	
-	<!-- DataTables and jQuery -->
+	<!-- Stylesheets -->
+	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Lato:400,400italic,900italic,900">
+	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+	
+	<!-- jQuery -->
 	<script src="js/jquery.js"></script>	
 	<script src="js/jquery.dataTables.js"></script>
 	
@@ -16,56 +20,61 @@
 	<script src="js/navigation.js"></script>		<!-- Specifies what to do when the page loads -->
 	<script src="js/dynamic_forms.js"></script>		<!-- Allows to add/delete rows for genes -->
 	<script src="js/late_fxns.js"></script>			<!-- Helper functions for processing the plasmid -->
-	
+
 </head>
-
+<html lang="en">
 <body>
-<div id="header">
-	<h2>CRISPRi Design Tool</h2>
-</div>
-
+<div id="body_wrapper">
+<header>
+<h1>CRIS<span class="bluetext">PR<span class="italic">ecise</span></span></h1>
+<p id="subheader" class="italic">a tool for CRISPRi target selection</p>
+</header>
 <div id ="container">
-	
 	<!-- Section I -->
-	<div id="entryHeader">
-		<h3>Input Sequences</h3>
-	</div>
-	
 	<div id="inputContainer">
-		This web app may be used to locate target sites for CRISPRi<br>
+	    <div id="entryHeader">
+	        <h3>Sequence Search</h3>
+	    </div>
 		<form id="inputData" action="php/processor.php" method="post" name="main">
-			Please enter the PAM sequence:
-			<input id="pamseq" type="text" name="pamseq"><br><br>
-			
-			<input type="button" value="Add Row" onclick="addRow('inputTable')" />
-			<input type="button" value="Delete Row" onclick="deleteRow('inputTable')" />
+			Select a <strong class="bluetext">PAM Sequence</strong>:
+			<div id="pamseq">
+			    <input type="radio" id="pamseq1" name="pamseq" value="NGG" class="button" checked="checked"/ ><label for="pamseq1">NGG</label>
+			    <input type="radio" id="pamseq2" name="pamseq" value="NRG" class="button"/><label for="pamseq2">NRG</label>
+			    <input type="radio" id="pamseq3" name="pamseq" value="none"><label for="pamseq3">Enter custom 3 NT sequence:&nbsp;</label><input maxlength="3" type="text" id="customPAM">
+			</div>
+			<br><br>
+			Enter one or more <strong class="bluetext">genes</strong> to search for possible CRISPR targets:
+			<br><br>
+			<input type="button" value="Add Row" onclick="addRow('inputTable')" class="button"/>
+			<input type="button" value="Delete Row" onclick="deleteRow('inputTable')" class="button"/>
 			
 			<table id="inputTable" border="1">
+			    <thead>
 				<th>Select</th>
 				<th>Gene Name</th>
 				<th>Promoter (Coding Strand)</th>
 				<th>Gene (Coding Strand)</th>
-				
+				</thead>
+				<tbody>
 				<tr>
 					<td><input type="checkbox" name="chk[]"/></td>
 					<td><input id="genenames" type="text" name="GENnames[]"/></td>
-					<td><textarea id="promoters" name="PROs[]" rows="8" cols="40"></textarea></td>
-					<td><textarea id="genes" name="GENs[]" rows="8" cols="80"></textarea></td>
+					<td><textarea id="promoters" name="PROs[]" rows="8" cols="30"></textarea></td>
+					<td><textarea id="genes" name="GENs[]" rows="8" cols="40"></textarea></td>
 				</tr>
+				</tbody>
 			</table><br>
-			<input type="submit" id="submitButton"  name="submitButton" value="Submit">
+			<input type="submit" id="submitButton"  name="submitButton" value="Search Sequences" class="button">
 			<!--<input type="button" id="gettable" name="gettable" value="Submit" class="btn btn-custom"/> -->
-			Hit submit and we will process your sequences
 		</form>
 	</div>
 	
 	
 	<!-- Section II -->
-	<div id="resultsHeader">
-		<h3>Results Table</h3>
-	</div>
-	
 	<div id="resultsContainer">
+	    <div id="resultsHeader">
+		    <h3>Results Table</h3>
+	    </div>
 		<div>
 			<input type="button" id="returnInput" value="Modify Search">
 			<br><br>
@@ -97,12 +106,11 @@
 	</div>
 	
 	
-	<!-- Section III -->
-	<div id="plasmidHeader">
-		<h3>Plasmid View</h3>
-	</div>
-	
+	<!-- Section III -->	
 	<div id="plasmidContainer">
+	    	<div id="plasmidHeader">
+		    <h3>Plasmid View</h3>
+	    </div>
 		<div>
 			<input type="button" id="returnTable" value="Select new targets">
 			<br><br>
