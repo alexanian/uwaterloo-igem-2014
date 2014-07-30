@@ -25,12 +25,18 @@ $(document).ready(function() {
 	$('#plasmidContainer').hide();
 	$('#results').dataTable();
 	drawArc();
-	drawCircle();
-	
+	drawCircle();	
 	
 	// What to do on submit
 	$("#inputData").submit(function(event) {
 		event.preventDefault();
+			
+	    // If a custom PAM sequence has been entered, set the value of the custom
+		// radio button to the input
+        if ( $('#customPAM').val() ) {
+	       $('#pamseq3').val($('#customPAM').val().toUpperCase());
+	    }
+		
 		$('#results').dataTable().fnDestroy(); 
 		$("#results").dataTable( {
 		    "processing" : true,
