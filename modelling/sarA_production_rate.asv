@@ -1,6 +1,5 @@
 % I think this doesn't make sense, because our units are
-% fluor (unknown units) / density of cells @ 595 nm / fluor A.U * mean #
-% molecules per cell
+% fluor (unknown units) / density of cells @ 595 nm * # cells
 
 % Very tiny script to fit the three SarA P1 data points from Figure 2B
 % in Malone et al., http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2693297/
