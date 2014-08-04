@@ -7,12 +7,12 @@
 % approximation is incorrect, but it allows us to define a single value for
 % SarA P1 expression)
 
-% Values for fluoresence were measured super-hackily by interpolating the
+% Values for fluorescence were measured super-hackily by interpolating the
 % pixels in the figure (which is also why they are to the nearest 50)
 
 time_h=[4 5 6];
-fluoresence_rel=[1850 6000 9850]; % (measured relative to cell density)
-fluoresence_rel_rel = fluoresence_rel ./ fluoresence_rel(1);
+fluorescence_rel=[1850 6000 9850]; % (measured relative to cell density)
+fluorescence_rel_rel = fluorescence_rel ./ fluorescence_rel(1);
 
-stats=regstats(fluoresence_rel_rel,time_h,'linear')
+stats=regstats(fluorescence_rel_rel,time_h,'linear')
 coefficients=stats.beta
