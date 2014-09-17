@@ -1,24 +1,23 @@
-% I think this doesn't make sense, because our units are
-% fluor (unknown units) / density of cells @ 595 nm / fluor A.U * mean #
-% molecules per cell
-
-% Very tiny script to fit the three SarA P1 data points from Figure 2B
-% in Malone et al., http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2693297/
-
-% Disregarding the timepoint at 16h because it's obviously reached
-% steady-state at that point (which also, clearly, means that a linear
-% approximation is incorrect, but it allows us to define a single value for
-% SarA P1 expression)
-
-time_h=[4 5 6];
-
+% Fluorescence (OD) read from Cheung et al, see figure 4B in
+% http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2258893/
 % Values for relative fluorescence measured super-hackily by interpolating the
-% pixels in the figure (which is also why they are to the nearest 50)
-fluorescence_rel=[850 1680 3130];
+% pixels in the figure (which is also why they are to the nearest 10)
+time_h = [3 4 5 6 7 8 9 10];
+time_min = time_h * 60;
+fluor_OD_sarAneg = [11680 13260 12480 12400 13670 15860 17120 18290];
+fluor_OD_sarA = [9500 10590 10700 11310 12420 13400 14000 15080];
 
-% I then normalized to the number of molecules using Wu & Pollard:
-% 0.00676 A.U / mean # molecules per cell from Wu & Pollard
-fluorescence_norm = fluorescence_rel / 0.00676;
+% I then converted from fluorescence to number of molecules
+% using Wu & Pollard: 0.00676 A.U / mean # molecules per cell
+fluor_molec = fluor_OD_sarA / 0.00676;
 
-stats=regstats(fluorescence_norm,time_h,'linear')
-coefficients=stats.beta
+% Then normalized the observed change to get an accurate rate
+fluor_norm = (fluor_molec - fluor_molec(1)) / fluor_molec(1);
+
+linearCoef = polyfit(time_min,fluor_norm,1);
+linearFit = polyval(linearCoef,time_min);
+plot(time_min, fluor_norm, 'k.', time_min,linearFit, 'r');
+xlabel('Time (min)'); ylabel('Normalized change in # of Fluorescent Molecules');
+xlim([180 600]); ylim([0 0.6]);
+
+sarA_per_molecule_rate = linearCoef(1)
