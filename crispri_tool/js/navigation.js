@@ -20,22 +20,22 @@ $.fn.serializeObject = function()
 };
 
 $(document).ready(function() {
-	// What to hide on start-up
+	// Hide results container divs on start-up
 	$('#resultsContainer').hide();
 	$('#plasmidContainer').hide();
 	$('#results').dataTable();
 	drawArc();
 	drawCircle();	
 	
-	// What to do on submit
+	// What to do on submitting the search button
 	$("#inputData").submit(function(event) {
 		event.preventDefault();
 			
-	    // If a custom PAM sequence has been entered, set the value of the custom
-		// radio button to the input
-        if ( $('#customPAM').val() ) {
-	       $('#pamseq3').val($('#customPAM').val().toUpperCase());
-	    }
+		// If a custom PAM sequence has been entered, set the value of
+		// the custom radio button to the input
+		if ( $('#customPAM').val() ) {
+			$('#pamseq3').val($('#customPAM').val().toUpperCase());
+		}
 		
 		$('#results').dataTable().fnDestroy(); 
 		$("#results").dataTable( {
