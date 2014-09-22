@@ -14,10 +14,13 @@ fluor_molec = fluor_OD_sarA / 0.00676;
 % Then normalized the observed change to get an accurate rate
 fluor_norm = (fluor_molec - fluor_molec(1)) / fluor_molec(1);
 
-linearCoef = polyfit(time_min,fluor_norm,1);
-linearFit = polyval(linearCoef,time_min);
-plot(time_min, fluor_norm, 'k.', time_min,linearFit, 'r');
+% Curve fitting of exponent
+ft=fittype('exp1');
+expCoeff = coeffvalues(fit(time_min',fluor_norm',ft));
+expFit = expCoeff(1)*exp(expCoeff(2)*time_min);
+
+plot(time_min, fluor_norm, 'k.', time_min,expFit, 'r');
 xlabel('Time (min)'); ylabel('Normalized change in # of Fluorescent Molecules');
 xlim([180 600]); ylim([0 0.6]);
 
-sarA_per_molecule_rate = linearCoef(1)
+sarA_per_molecule_rate = expCoeff(2)
