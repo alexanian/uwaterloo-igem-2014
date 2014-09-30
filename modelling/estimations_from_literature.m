@@ -12,19 +12,16 @@ fluor_OD_sarA = [9500 10590 10700 11310 12420 13400 14000 15080];
 % using Wu & Pollard: 0.00676 A.U / mean # molecules per cell
 fluor_molec = fluor_OD_sarA / 0.00676;
 
-% Then normalized the observed change to get an accurate rate
-fluor_norm = (fluor_molec - fluor_molec(1));
-
 % Curve fitting of exponent
 ft=fittype('exp1');
-expCoeff = coeffvalues(fit(time_min',fluor_norm',ft));
+expCoeff = coeffvalues(fit(time_min',fluor_molec',ft));
 expFit = expCoeff(1)*exp(expCoeff(2)*time_min);
 
-h = plot(time_min, fluor_norm, 'kd', time_min,expFit, 'b');
+h = plot(time_min, fluor_molec, 'kd', time_min,expFit, 'b');
 set(h, {'MarkerFaceColor'}, {'k'; 'b';}, {'MarkerSize'}, {6; 1;},...
     {'LineWidth'},{1; 2;})
-xlabel('Time (min)'); ylabel('Normalized # of Fluorescent Molecules');
-xlim([180 600]); ylim([0 9e5]);
+xlabel('Time (min)'); ylabel('# of Fluorescent Molecules');
+xlim([180 600]); 
 
 sarA_per_molecule_rate = expCoeff(2)
 
