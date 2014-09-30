@@ -23,27 +23,26 @@ global gamma_mrnaY
 % Reaction rate constants
 global k_minus
 global k_plus
-global k1
-global k2
+global K_a
 global n
 
 %assign parameter values
 % Production and degradation terms
-alpha_mrnaC=1.0;
-alpha_mrnaY=1.0;
-alpha_Rg=1.0;
+alpha_mrnaC=0.0047;
+alpha_mrnaY=0.0047;
+alpha_Rg=0.0047;
+alpha_Rg=0.5;
 alpha0_mrnaY=1.0;
 beta_C=1.0;
-gamma_C=1.0;
-gamma_mrnaC=1.0;
-gamma_Rg=1.0;
-gamma_mrnaY=1.0;
+gamma_C=-5.6408*10^-4;
+gamma_mrnaC=0.1734;
+gamma_Rg=0.1734;
+gamma_mrnaY=0.1734;
 
 % Reaction rate constants
 k_minus=1.0;
 k_plus=1.0;
-k1=1.0;
-k2=1.0;
+K_a=0.28;
 n=2.5;
 
 % Set simulation parameters
@@ -52,7 +51,7 @@ options=odeset('Refine', 6);
 Tend=300;
 
 % Set initial condition: state = [mrnaC, C, Rg, mrnaY]
-x0=[0.2, 0.1, 0.3, 0.1]';
+x0=[0, 0, 0, 5]';
 
 % Run simulation
 [t,S]=ode45(ODEFUN, [0,Tend], x0, options);
@@ -65,7 +64,7 @@ plot(t, S(:,2), 'b', 'Linewidth', 1.5)
 plot(t, S(:,3), 'r', 'Linewidth', 1.5)
 plot(t, S(:,4), 'k--', 'Linewidth', 1.5)
 legend('mrnaC', 'C', 'Rg', 'mrnaY', 'Location','Best')
-xlabel('Time (arbitrary units)')
+xlabel('Time (minutes)')
 ylabel('Concentration (arbitrary units)')
 
 end
@@ -87,8 +86,7 @@ function dS=crispr_ode(t,s)
     % Reaction rate constants
     global k_minus
     global k_plus
-    global k1
-    global k2
+    global K_a
     global n
 
     % Differential terms
@@ -99,7 +97,6 @@ function dS=crispr_ode(t,s)
 
     % Non-differential terms from QSSA
     K = k_plus/k_minus;
-    K_a = k2/k1;
     CRg = K*C*Rg;
 
     mrnaC_dt= alpha_mrnaC - gamma_mrnaC*mrnaC;
