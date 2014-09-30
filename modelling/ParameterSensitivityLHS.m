@@ -1,4 +1,4 @@
-function SensitivityCoeff = ...
+function [ SensitivityCoeff, Errors ] = ...
     ParameterSensitivityLHS( DESystem, OutputSystem, TMeas, YMeas, ParameterBounds, Y0, SampleCount )
 % ParameterSensitivityLHS  Estimate Parameter Sensitivity for a Differential
 % Equation System using Latin Hypercube Sampling
@@ -54,15 +54,17 @@ function SensitivityCoeff = ...
             ( Samples(:,i) + ParameterBounds(i,1) );
     end
 
+    
     % Simulate DE for all parameter sets
-    parfor( i = 1:SampleCount, 20 )
+    Errors = zeros([SampleCount, 1]);
+    parfor( i = 1:SampleCount, 40 )
         DE = CreateParameterlessDE(DESystem, Samples(i,:));
         [~, Ys] = ode23( DE, TMeas, Y0 );
 
         % Calculate Error between Simulation and Measured Result
-        Ys = YMeas - OutputSystem(Ys);
-        Ys = Ys .* Ys;
-        SampledErrors(i) = sum(Ys);
+        Ys = OutputSystem(Ys);
+        Errors(i) = RSquared( YMeas, Ys );
+        SampledErrors(i) = Errors(i);
     end
 
     % Calculate Threshold for deciding between
@@ -109,6 +111,17 @@ function SensitivityCoeff = ...
         % Get Sensitivity
         [~,~,SensitivityCoeff(i)] = kstest2(Acceptable, Unacceptable);
     end
+end
+
+function E = RSquared( YMeas, YObs )
+    YM = mean(YObs);
+    YRes = YObs - YMeas;
+    YTot = YObs - YM * ones(size(YObs));
+    
+    YRes = YRes .* YRes;
+    YTot = YTot .* YTot;
+    
+    E = 1 - sum(YRes)/sum(YTot);
 end
 
 % Helper Function to Wrap a Parameterized DE System
