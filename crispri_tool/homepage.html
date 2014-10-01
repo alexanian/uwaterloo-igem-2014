@@ -30,7 +30,7 @@
 <p id="subheader" class="italic">a tool for CRISPRi target selection</p>
 </header>
 <div id ="container">
-	<!-- Section I -->
+	<!-- Input Section (visible on page load) -->
 	<div id="inputContainer">
 	    <div id="entryHeader">
 	        <h3>Sequence Search</h3>
@@ -43,10 +43,8 @@
 			    <input type="radio" id="pamseq3" name="pamseq" value="none"><label for="pamseq3">Enter custom 3 NT sequence:&nbsp;</label><input maxlength="3" type="text" id="customPAM">
 			</div>
 			<br><br>
-			Enter one or more <strong class="bluetext">genes</strong> to search for possible CRISPR targets:
+			Enter a<strong class="bluetext">gene</strong> name and sequence to search for possible CRISPR targets:
 			<br><br>
-			<input type="button" value="Add Row" onclick="addRow('inputTable')" class="button"/>
-			<input type="button" value="Delete Row" onclick="deleteRow('inputTable')" class="button"/>
 			
 			<table id="inputTable" border="1">
 			    <thead>
@@ -58,19 +56,18 @@
 				<tbody>
 				<tr>
 					<td><input type="checkbox" name="chk[]"/></td>
-					<td><input id="genenames" type="text" name="GENnames[]"/></td>
-					<td><textarea id="promoters" name="PROs[]" rows="8" cols="30"></textarea></td>
-					<td><textarea id="genes" name="GENs[]" rows="8" cols="40"></textarea></td>
+					<td><input id="genename" type="text" name="Gene"/></td>
+					<td><textarea id="promoters" name="PromoterSeq" rows="8" cols="30"></textarea></td>
+					<td><textarea id="genes" name="GeneSeq" rows="8" cols="40"></textarea></td>
 				</tr>
 				</tbody>
 			</table><br>
 			<input type="submit" id="submitButton"  name="submitButton" value="Search Sequences" class="button">
-			<!--<input type="button" id="gettable" name="gettable" value="Submit" class="btn btn-custom"/> -->
 		</form>
 	</div>
 	
 	
-	<!-- Section II -->
+	<!-- Results Section -->
 	<div id="resultsContainer">
 	    <div id="resultsHeader">
 		    <h3>Results Table</h3>

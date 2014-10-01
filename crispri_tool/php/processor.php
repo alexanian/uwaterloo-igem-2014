@@ -1,14 +1,9 @@
 <?php
 
-require 'early_fxns.php';
-require 'sql_helper.php';
+require 'find_targets_fxns.php';
 
-function processRequest( $genenames, $genes, $promoters, $PAM ) { 
+function processSeqSearch( $genenames, $genes, $promoters, $PAM ) { 
     $sg_len = 20;
-    
-    $PossibleTargets = new PossibleTargetsDB();
-    $targetCache = new TargetCache();
-	$a = 0;
 	
     foreach ($genenames as $a => $b) {
 	    $coding = strtoupper($promoters[$a] . $genes[$a]);
@@ -23,5 +18,5 @@ $genenames = $_POST['GENnames'];
 $promoters = $_POST['PROs'];
 $genes = $_POST['GENs'];
 
-processRequest( $genenames, $genes, $promoters, $PAM );
+processSeqSearch( $genenames, $genes, $promoters, $PAM );
 ?>

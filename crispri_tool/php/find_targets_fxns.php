@@ -34,14 +34,14 @@ class TargetCache
     }
 }
 
-//---------------------------------------------------
-// This function finds the complementary strand to the sequence
+/**
+ * This function finds the reverse complement strand to the sequence
+ * @param	input_seq			Input Sequence
+ * @returns	output_seq			Reverse Complement of input_seq
+ */
 function complement($input_seq) {
-    $step1 = str_replace("C","G",$input_seq);
-    $step2 = str_replace("G","C",$step1);
-    $step3 = str_replace("T","A",$step2);
-    $step4 = str_replace("A","T",$step3);
-    $output_seq = strtoupper($step4);
+    $complements = array("C" => "G", "G" => "C", "T" => "A", "A" => "T");
+    $output_seq = strtoupper(strtr($input_seq, $complements));
     return strrev($output_seq);
 }
 
@@ -54,7 +54,6 @@ function complement($input_seq) {
  * @returns array               { sgRNA => sgRNA Sequence, valid => If it is of valid length }
  */
 function find_sg_seq($input_seq, $pos, $pam_seq, $sg_len) {
-
     $startpos = $pos - $sg_len;
     $valid = ($startpos >= 0);
     
@@ -84,11 +83,10 @@ function findsites(&$possibleTargets, &$targetCache, $geneid, $genename, $origin
     $i = 0; // Dummy index
     $num_found = 0;
     $pos = true;
-    $input_seq = ($strand == 1 ? complement($original_seq) : $original_seq);
-    $strandName = ($strand == 1 ? "Template" : "Coding");
+	$strandName = ($strand == 1 ? "Template" : "Coding");
+    $input_seq = ($strand == 1 ? complement($original_seq) : $original_seq);    
     
-    // Loop through the string
-    // and Find position of PAM substring on strand
+	// Loop through the string and Find position of PAM substring on strand
     // Break if nothing is found
 	while( ($pos = strpos($input_seq, $pam_seq, $i)) !== false ) {
         
@@ -108,7 +106,7 @@ function findsites(&$possibleTargets, &$targetCache, $geneid, $genename, $origin
  * This function finds the locations of all PAM sites that may be targeted on a Gene
  * It will first lookup the gene in the database and see if the data is already cached.
  * If it is found, it will cache any valid targets for returning as json in the TargetCache.
- * Otherwise, it will find sites, insert them into the DB, and cache the valid ones in the targetcache.
+ * Otherwise, it will find sites, insert them into the DB, and cache the valid ones in TargetCache.
  * @param   possibleTargets     PossibleTargetsDB instance
  * @param   targetCache         Target Cache instance
  * @param   genename            Gene Name
@@ -121,7 +119,9 @@ function findSitesUsingCodingStrand(&$possibleTargets, &$targetCache, $genename,
     
     if( $possibleTargets->insertGene( $genename, $coding, $geneId ) ) { 
         $targetCache->addTargets( $possibleTargets->queryTargets( $geneId, $sg_len ) );
-    } else { 
+    } else {
+		// The first search will find matches in the coding strand, while the second search will
+        // take the reverse complement 
         findsites($possibleTargets, $targetCache, $geneId, $genename, $coding, 0, $pam_seq, $sg_len);
         findsites($possibleTargets, $targetCache, $geneId, $genename, $coding, 1, $pam_seq, $sg_len);
     }
