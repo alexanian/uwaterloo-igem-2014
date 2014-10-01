@@ -57,7 +57,7 @@ function [ SensitivityCoeff, Errors ] = ...
     
     % Simulate DE for all parameter sets
     Errors = zeros([SampleCount, 1]);
-    parfor( i = 1:SampleCount, 40 )
+    parfor( i = 1:SampleCount, 50 )
         DE = CreateParameterlessDE(DESystem, Samples(i,:));
         [~, Ys] = ode23( DE, TMeas, Y0 );
 
@@ -97,10 +97,13 @@ function [ SensitivityCoeff, Errors ] = ...
         Unacceptable = Unacceptable(1:(UC-1));
         
         % Plot CDF of Parameter value
-        clf
-        ecdf(Acceptable)
-        hold on
-        ecdf(Unacceptable)
+        clf;
+        ecdf(Acceptable);
+        hold on;
+        ecdf(Unacceptable);
+        h = get(gca,'children');
+        set(h(2), 'LineStyle', ':');
+        legend('Acceptable', 'Unacceptable');
         
         % Save CDF
         I = getframe(gcf);
