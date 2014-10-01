@@ -8,7 +8,7 @@ function crispr_model
 
 clear all
 
-%declare model parameters
+% Declare model parameters
 % Production and degradation terms
 global alpha_mrnaC
 global alpha_mrnaY
@@ -26,12 +26,11 @@ global k_plus
 global K_a
 global n
 
-%assign parameter values
+% Assign parameter values
 % Production and degradation terms
 alpha_mrnaC=0.0047;
 alpha_mrnaY=0.0047;
 alpha_Rg=0.0047;
-alpha_Rg=0.5;
 beta_C=1.0;
 gamma_C=-5.6408*10^-4;
 gamma_B=-5.6408*10^-4;
@@ -95,7 +94,7 @@ function dS=crispr_ode(t,s)
     C=s(2); % dCas9
     Rg=s(3); % sgRNA
     mrnaY=s(4); % mRNA to produce YFP
-    mrnaY_noR_dt=s(5); % mRNA dynamics without repression
+    mrnaY_noR=s(5); % mRNA dynamics without repression
 
     % Non-differential terms from QSSA
     B = k_plus*C*Rg/(k_minus+gamma_B);
@@ -104,7 +103,7 @@ function dS=crispr_ode(t,s)
     C_dt= beta_C*mrnaC - gamma_C*C + k_minus*B - k_plus*C*Rg;
     Rg_dt=alpha_Rg - gamma_Rg*Rg + k_minus*B - k_plus*C*Rg;
     mrnaY_dt=alpha_mrnaY*(0.6 + 0.4/(1 + (B/K_a)^n)) - gamma_mrnaY*mrnaY;
-    mrnaY_noR_dt=alpha_mrnaY - gamma_mrnaY*mrnaY;
+    mrnaY_noR_dt=alpha_mrnaY - gamma_mrnaY*mrnaY_noR;
     dS=[mrnaC_dt, C_dt, Rg_dt, mrnaY_dt, mrnaY_noR_dt]';
 end
 
