@@ -43,30 +43,29 @@ function [ SensitivityCoeff, Errors ] = ...
     end
     
     PCount = size(ParameterBounds, 1);
-    SampledErrors = zeros([SampleCount 1]);
     
     % Generate uniformly distributed parameters in [0,1] that
     % are independent of one another. 
     Samples = lhsdesign( SampleCount, PCount );
     for i = 1:PCount
         % Scale parameters using their ranges
-        Samples(:,i) = ParameterBounds(i,2) * ...
-            ( Samples(:,i) + ParameterBounds(i,1) );
+        Samples(:,i) = ( ParameterBounds(i,2) - ParameterBounds(i, 1) ) * ...
+            ( Samples(:,i) ) + ParameterBounds(i,1);
     end
 
     
     % Simulate DE for all parameter sets
-    Errors = zeros([SampleCount, 1]);
-    parfor( i = 1:SampleCount, 50 )
+    SampledErrors = zeros([SampleCount 1]);
+    OutputFunc = @(Y) OutputSystem(Y);
+    parfor( i = 1:SampleCount )
         DE = CreateParameterlessDE(DESystem, Samples(i,:));
         [~, Ys] = ode23( DE, TMeas, Y0 );
 
         % Calculate Error between Simulation and Measured Result
-        Ys = OutputSystem(Ys);
-        Errors(i) = RSquared( YMeas, Ys );
-        SampledErrors(i) = Errors(i);
+        SampledErrors(i) = RSquared( YMeas, OutputFunc(Ys) );
     end
-
+    Errors = SampledErrors;
+    
     % Calculate Threshold for deciding between
     % Acceptable and Unacceptable.
     Threshold = mean(SampledErrors);
@@ -96,7 +95,23 @@ function [ SensitivityCoeff, Errors ] = ...
         Acceptable = Acceptable(1:(AC-1));
         Unacceptable = Unacceptable(1:(UC-1));
         
-        % Plot CDF of Parameter value
+        % Get ECDFs
+        [f1, x1] = ecdf(Acceptable);
+        [f2, x2] = ecdf(Unacceptable);
+        
+        range = linspace(ParameterBounds(i,1), ParameterBounds(i,2), SampleCount);
+        clf;
+        axis([ParameterBounds(i, 1) ParameterBounds(i, 2) 0 1]);
+        hold on;
+        plot(range, ecdfdiff(f1, x1, f2, x2, range));
+        
+        % Save Difference in ECDF
+        I = getframe(gcf);
+        imwrite(I.cdata, ...
+            sprintf('System_Sensitivity_Difference_Parameter_%d.bmp',i));
+        close(gcf)
+        
+        % Plot ECDF of Parameter values
         clf;
         ecdf(Acceptable);
         hold on;
@@ -113,6 +128,38 @@ function [ SensitivityCoeff, Errors ] = ...
         
         % Get Sensitivity
         [~,~,SensitivityCoeff(i)] = kstest2(Acceptable, Unacceptable);
+    end
+end
+
+function FDiff = ecdfdiff( ecdf1, x1, ecdf2, x2, fullrange )
+    c1 = 1;
+    c2 = 1;
+    c0 = 1;
+    v1 = 0;
+    v2 = 0;
+    FDiff = zeros(size(fullrange));
+    for x = fullrange
+        while( x1(c1) < x )
+            v1 = ecdf1(c1);
+            c1 = c1 + 1;
+            if( c1 > length(x1) )
+                v1 = 1;
+                c1 = length(x1);
+                break;
+            end
+        end
+        while( x2(c2) < x )
+            v2 = ecdf2(c2);
+            c2 = c2 + 1;
+            if( c2 > length(x2) )
+                v2 = 1;
+                c2 = length(x2);
+                break;
+            end
+        end
+        
+        FDiff(c0) = abs(v1 - v2);
+        c0 = c0 + 1;
     end
 end
 
