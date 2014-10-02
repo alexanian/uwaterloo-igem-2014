@@ -39,7 +39,7 @@ function [ SensitivityCoeff, Errors ] = ...
 
     % Default Sample COunt
     if nargin < 7
-        SampleCount = 10000;
+        SampleCount = 1000;
     end
     
     PCount = size(ParameterBounds, 1);
@@ -59,7 +59,7 @@ function [ SensitivityCoeff, Errors ] = ...
     OutputFunc = @(Y) OutputSystem(Y);
     parfor( i = 1:SampleCount )
         DE = CreateParameterlessDE(DESystem, Samples(i,:));
-        [~, Ys] = ode23( DE, TMeas, Y0 );
+        [~, Ys] = ode45( DE, TMeas, Y0 );
 
         % Calculate Error between Simulation and Measured Result
         SampledErrors(i) = RSquared( YMeas, OutputFunc(Ys) );
