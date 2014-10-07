@@ -60,9 +60,11 @@ function [ SensitivityCoeff, Errors ] = ...
     parfor( i = 1:SampleCount )
         DE = CreateParameterlessDE(DESystem, Samples(i,:));
         [~, Ys] = ode45( DE, TMeas, Y0 );
-
+        
         % Calculate Error between Simulation and Measured Result
         SampledErrors(i) = RSquared( YMeas, OutputFunc(Ys) );
+        
+        sprintf('Parameter %i complete!', i)
     end
     Errors = SampledErrors;
     
@@ -99,11 +101,12 @@ function [ SensitivityCoeff, Errors ] = ...
         [f1, x1] = ecdf(Acceptable);
         [f2, x2] = ecdf(Unacceptable);
         
-        range = linspace(ParameterBounds(i,1), ParameterBounds(i,2), SampleCount);
+        % Plot difference of ECDFs (to observe sensitivity values across
+        % the range of parameters)
         clf;
-        axis([ParameterBounds(i, 1) ParameterBounds(i, 2) 0 1]);
-        hold on;
-        plot(range, ecdfdiff(f1, x1, f2, x2, range));
+        range = linspace(ParameterBounds(i,1), ParameterBounds(i,2), SampleCount);
+        semilogx(range, ecdfdiff(f1, x1, f2, x2, range));
+        axis([-inf,inf,0,1]);
         
         % Save Difference in ECDF
         I = getframe(gcf);
@@ -111,7 +114,7 @@ function [ SensitivityCoeff, Errors ] = ...
             sprintf('System_Sensitivity_Difference_Parameter_%d.bmp',i));
         close(gcf)
         
-        % Plot ECDF of Parameter values
+        % Plot ECDF of acceptable/unacceptable Parameter values
         clf;
         ecdf(Acceptable);
         hold on;
@@ -126,11 +129,12 @@ function [ SensitivityCoeff, Errors ] = ...
             sprintf('System_Sensitivity_Parameter_%d.bmp',i));
         close(gcf)
         
-        % Get Sensitivity
+        % Return Sensitivity coefficient
         [~,~,SensitivityCoeff(i)] = kstest2(Acceptable, Unacceptable);
     end
 end
 
+% Calculates the difference between two ECDFs
 function FDiff = ecdfdiff( ecdf1, x1, ecdf2, x2, fullrange )
     c1 = 1;
     c2 = 1;
@@ -163,7 +167,8 @@ function FDiff = ecdfdiff( ecdf1, x1, ecdf2, x2, fullrange )
     end
 end
 
-function E = RSquared( YMeas, YObs )
+% Calculates R Squared Error
+function E = RSquared( YMeas, YObs )  
     YM = mean(YObs);
     YRes = YObs - YMeas;
     YTot = YObs - YM * ones(size(YObs));
