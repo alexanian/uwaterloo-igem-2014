@@ -28,10 +28,10 @@ global n
 
 % Assign parameter values
 % Production and degradation terms
-alpha_mrnaC=0.0047;
-alpha_mrnaY=0.0047;
-alpha_Rg=0.0047;
-beta_C=1.0;
+alpha_mrnaC=0.0011;
+alpha_mrnaY=0.0011;
+alpha_Rg=0.0011;
+beta_C=(0.0057 + 0.4797)/2; % midpoint of range
 gamma_C=-5.6408*10^-4;
 gamma_B=-5.6408*10^-4;
 gamma_mrnaC=0.1734;
@@ -39,8 +39,8 @@ gamma_Rg=0.1734;
 gamma_mrnaY=0.1734;
 
 % Reaction rate constants
-k_minus=1.0;
-k_plus=1.0;
+k_minus=0.1; % midpoint of range
+k_plus=0.1; % midpoint of range
 K_a=0.28;
 n=2.5;
 
