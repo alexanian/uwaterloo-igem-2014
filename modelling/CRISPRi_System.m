@@ -26,10 +26,13 @@ function dS = CRISPRi_System( t, s, p )
     % Non-differential terms from QSSA
     B = k_plus*C*Rg/(k_minus+gamma_B);
 
+    % Differential System
     mrnaC_dt= alpha_mrnaC - gamma_mrnaC*mrnaC;
     C_dt= beta_C*mrnaC - gamma_C*C + k_minus*B - k_plus*C*Rg;
     Rg_dt=alpha_Rg - gamma_Rg*Rg + k_minus*B - k_plus*C*Rg;
     mrnaY_dt=alpha_mrnaY*(0.6 + 0.4/(1 + (B/K_a)^n)) - gamma_mrnaY*mrnaY;
     mrnaY_noR_dt=alpha_mrnaY - gamma_mrnaY*mrnaY_noR;
-    dS=[mrnaC_dt, C_dt, Rg_dt, mrnaY_dt, mrnaY_noR_dt]';    
+    
+    dS=[mrnaC_dt, C_dt, Rg_dt, mrnaY_dt, mrnaY_noR_dt]';
 end
+
