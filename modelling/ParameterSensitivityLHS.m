@@ -57,22 +57,24 @@ function [ SensitivityCoeff, Errors ] = ...
     % Simulate DE for all parameter sets
     SampledErrors = zeros([SampleCount 1]);
     OutputFunc = @(Y) OutputSystem(Y);
-    parfor( i = 1:SampleCount )
+    for i = 1:SampleCount
         DE = CreateParameterlessDE(DESystem, Samples(i,:));
         [~, Ys] = ode45( DE, TMeas, Y0 );
         
         % Calculate Error between Simulation and Measured Result
-        SampledErrors(i) = RSquared( YMeas, OutputFunc(Ys) );
-        
-        sprintf('Parameter %i complete!', i)
+        SampledErrors(i) = LeastSquaresError( YMeas, OutputFunc(Ys) );
     end
+
     Errors = SampledErrors;
-    
+
     % Calculate Threshold for deciding between
     % Acceptable and Unacceptable.
     Threshold = mean(SampledErrors);
 
-    SensitivityCoeff = zeros([PCount 1]);
+    min(Errors)
+    max(Errors)
+    
+    SensitivityCoeff = zeros([PCount 1]);    
     % Go through each parameter and make a plot of their CDFS
     for i = 1:PCount
 
@@ -111,27 +113,58 @@ function [ SensitivityCoeff, Errors ] = ...
         % Save Difference in ECDF
         I = getframe(gcf);
         imwrite(I.cdata, ...
-            sprintf('System_Sensitivity_Difference_Parameter_%d.bmp',i));
+            sprintf('Plots/Sensitivity/System_Sensitivity_Difference_Parameter_%d.bmp',i));
         close(gcf)
         
+    end
+    
+    figure('Position', [0 0 1024 1024]);
+    for i = 1:PCount
+       
+        % Partition different values of the parameter
+        % into whether or not its simulation is acceptable or not
+        Acceptable = zeros([SampleCount 1]);
+        Unacceptable = zeros([SampleCount 1]);
+        AC = 1;
+        UC = 1;
+        for s = 1:SampleCount
+            if( SampledErrors(s) < Threshold )
+                Acceptable(AC) = Samples(s,i);
+                AC = AC + 1;
+            else
+                Unacceptable(UC) = Samples(s,i);
+                UC = UC + 1;
+            end
+        end
+
+        % Trim off excess parts of the vector...really doing this
+        % for optimization purposes...
+        Acceptable = Acceptable(1:(AC-1));
+        Unacceptable = Unacceptable(1:(UC-1));
+        
         % Plot ECDF of acceptable/unacceptable Parameter values
-        clf;
+        subplot(4,4,i);
         ecdf(Acceptable);
         hold on;
         ecdf(Unacceptable);
         h = get(gca,'children');
         set(h(2), 'LineStyle', ':');
-        legend('Acceptable', 'Unacceptable');
-        
-        % Save CDF
-        I = getframe(gcf);
-        imwrite(I.cdata, ...
-            sprintf('System_Sensitivity_Parameter_%d.bmp',i));
-        close(gcf)
+        title(sprintf('Parameter %d', i));
+        hold off;
         
         % Return Sensitivity coefficient
         [~,~,SensitivityCoeff(i)] = kstest2(Acceptable, Unacceptable);
     end
+    
+    subplot(4,4,PCount+1);
+    axis off;
+    legend('Acceptable', 'Unacceptable');
+    
+    % Save CDF
+    I = getframe(gcf);
+    imwrite(I.cdata, ...
+        sprintf('Plots/Sensitivity/System_Sensitivities.bmp'));
+    close(gcf)
 end
 
 % Calculates the difference between two ECDFs
@@ -168,15 +201,15 @@ function FDiff = ecdfdiff( ecdf1, x1, ecdf2, x2, fullrange )
 end
 
 % Calculates R Squared Error
-function E = RSquared( YMeas, YObs )  
-    YM = mean(YObs);
+function E = LeastSquaresError( YMeas, YObs )  
+    %YM = mean(YObs);
     YRes = YObs - YMeas;
-    YTot = YObs - YM * ones(size(YObs));
+    %YTot = YObs - YM * ones(size(YObs));
     
     YRes = YRes .* YRes;
-    YTot = YTot .* YTot;
+    %YTot = YTot .* YTot;
     
-    E = 1 - sum(YRes)/sum(YTot);
+    E = sqrt(sum(YRes));
 end
 
 % Helper Function to Wrap a Parameterized DE System
