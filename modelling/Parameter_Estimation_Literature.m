@@ -21,14 +21,15 @@ fluor_nM = fluor_nanomol / staph_cell_volume_l;
 
 % Curve fitting of exponent
 ft=fittype('exp1');
-expCoeff = coeffvalues(fit(time_min',fluor_nM',ft));
+expCoeff = coeffvalues(fit(time_min',fluor_nanomol',ft));
 expFit = expCoeff(1)*exp(expCoeff(2)*time_min);
 sarA_per_mol_rate = expCoeff(2);
 
-h = plot(time_min, fluor_nM, 'kd', time_min,expFit, 'b');
-set(h, {'MarkerFaceColor'}, {'k'; 'b';}, {'MarkerSize'}, {6; 1;},...
+figure;
+h = plot(time_min, fluor_nanomol, 'kd', time_min,expFit, 'b');
+set(h, {'MarkerFaceColor'}, {'k'; 'b';}, {'MarkerSize'}, {8; 1;},...
     {'LineWidth'},{1; 2;})
-xlabel('Time (min)'); ylabel('Fluorescent Molecules in Cell (nM)');
+xlabel('Time (min)'); ylabel('Fluorescent Molecules in Culture (nanomoles)');
 xlim([180 600]); 
 
 %%%

@@ -1,4 +1,4 @@
-function dS = CRISPRi_System( t, s, p )
+function dS = CRISPRi_System( t_min, s, p )
     % Production and degradation terms
     alpha_mrnaC = p(1);
     alpha_mrnaY = p(2);
@@ -15,6 +15,10 @@ function dS = CRISPRi_System( t, s, p )
     k_plus = p(11);
     K_a = p(12);
     n = p(13);
+    
+    % Maximal concentration parameters
+    mrnaY_0 = p(14);
+    foldRepression = p(15);
 
     % Differential terms
     mrnaC=s(1); % dCas9 mRNA
@@ -27,11 +31,15 @@ function dS = CRISPRi_System( t, s, p )
     B = k_plus*C*Rg/(k_minus+gamma_B);
 
     % Differential System
-    mrnaC_dt= alpha_mrnaC - gamma_mrnaC*mrnaC;
-    C_dt= beta_C*mrnaC - gamma_C*C + k_minus*B - k_plus*C*Rg;
-    Rg_dt=alpha_Rg - gamma_Rg*Rg + k_minus*B - k_plus*C*Rg;
-    mrnaY_dt=alpha_mrnaY*(0.6 + 0.4/(1 + (B/K_a)^n)) - gamma_mrnaY*mrnaY;
-    mrnaY_noR_dt=alpha_mrnaY - gamma_mrnaY*mrnaY_noR;
+    mrnaC_dt =      alpha_mrnaC - gamma_mrnaC*mrnaC;
+    C_dt =          beta_C*mrnaC - gamma_C*C + k_minus*B - k_plus*C*Rg;
+    Rg_dt =         alpha_Rg - gamma_Rg*Rg + k_minus*B - k_plus*C*Rg;
+    
+    alpha_ratio =   gamma_mrnaY*mrnaY_0/(alpha_mrnaY*foldRepression);
+    
+    mrnaY_dt =      alpha_mrnaY*(alpha_ratio + ...
+                    (1-alpha_ratio)/(1 + (B/K_a)^n)) - gamma_mrnaY*mrnaY;
+    mrnaY_noR_dt =  alpha_mrnaY - gamma_mrnaY*mrnaY_noR;
     
     dS=[mrnaC_dt, C_dt, Rg_dt, mrnaY_dt, mrnaY_noR_dt]';
 end
