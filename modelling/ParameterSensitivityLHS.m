@@ -165,7 +165,7 @@ function [ SensitivityCoeff, Errors, Optimal ] = ...
     I = getframe(gcf);
     imwrite(I.cdata, ...
         sprintf('Plots/Sensitivity/System_Sensitivities.bmp'));
-    savefig('Plots/Sensitivity/System_Sensitivities.bmp');
+    savefig('Plots/Sensitivity/System_Sensitivities');
     close(gcf)
 end
 
