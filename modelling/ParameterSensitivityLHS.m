@@ -35,7 +35,7 @@ function [ SensitivityCoeff, Errors, Optimal ] = ...
 %                       a given value representing sensitivity. Higher
 %                       values mean higher sensitivity.
 %                       
-%   See also lhsdesign, ode23.
+%   See also lhsdesign, ode15s.
 
     % Default Sample COunt
     if nargin < 7
@@ -114,6 +114,7 @@ function [ SensitivityCoeff, Errors, Optimal ] = ...
         I = getframe(gcf);
         imwrite(I.cdata, ...
             sprintf('Plots/Sensitivity/System_Sensitivity_Difference_Parameter_%d.bmp',i));
+        savefig(sprintf('Plots/Sensitivity/System_Sensitivity_Difference_Parameter_%d',i));
         close(gcf)
         
     end
@@ -164,6 +165,7 @@ function [ SensitivityCoeff, Errors, Optimal ] = ...
     I = getframe(gcf);
     imwrite(I.cdata, ...
         sprintf('Plots/Sensitivity/System_Sensitivities.bmp'));
+    savefig('Plots/Sensitivity/System_Sensitivities.bmp');
     close(gcf)
 end
 
