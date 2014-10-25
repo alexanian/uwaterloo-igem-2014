@@ -1,5 +1,5 @@
 function Error = Simulate_CRISPRi_Error( t_min, YD , S0, Parameters )
-
+% Find squared error comparing simulated time series with model output
     DE = @(T,S) CRISPRi_System( T, S, Parameters );
     [~, YDExperiment] = ode23( DE, t_min, S0 );
     YDOut = CRISPRi_System_Output(YDExperiment);

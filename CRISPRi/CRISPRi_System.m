@@ -1,4 +1,5 @@
 function dS = CRISPRi_System( t_min, s, p )
+% CRISPRi_System Model of CRISPRi system to be used with ode45/ode23
     % Production and degradation terms
     alpha_mrnaC = p(1);
     alpha_mrnaY = p(2);

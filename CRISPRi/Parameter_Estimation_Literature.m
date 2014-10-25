@@ -1,4 +1,6 @@
-%%%
+% Code describing a number of estimates made from the literature- all
+% resulting parameters are found in CRISPRi_Literature_Parameters.mat
+%
 % Estimation of mRNA production from SarA promoter
 %%%
 % Fluorescence (OD) read from Cheung et al, see figure 4B in

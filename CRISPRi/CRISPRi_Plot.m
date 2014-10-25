@@ -1,4 +1,5 @@
 function CRISPRi_Plot(t, mrnaC, C, R, B, mrnaY)
+% Create similar plots without wasting space in CRISPRi_model.m
     figure;
     hold on
     plot(t, mrnaC, 'color', [0.77 0.85 0.89], 'Linewidth', 1.5)
