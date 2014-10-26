@@ -43,7 +43,9 @@ function CRISPRi_Model
     Tend=300;
 
     % Set initial condition: state = [mrnaC, C, Rg, mrnaY, mrnaY_noRepression]
-    S0=[0, 0, 0, mrnaY_0, mrnaY_0]';
+    % Assume sgRNA starts at the same concentration as mrnaY as they are
+    % under the same promoter
+    S0=[0, 0, mrnaY_0, mrnaY_0, mrnaY_0]';
 
     % Run simulation
     [t,S]=ode45(CRISPRiODE, [0,Tend], S0, options, parameters_0);
@@ -70,8 +72,8 @@ function CRISPRi_Model
     plot(t_min, YD_35, '--', 'color', [0.93 0.73 0.36], 'Linewidth', 1.5)
     hold off;
 
-    % Initial parameter values and bounds;
-    % note: only mRNA production rates are varied
+    % Initial parameter values and bounds.
+    % note: only mRNA production rates are varied by fmincon
     parameters_0 =      [alpha_mrnaC alpha_mrnaY alpha_Rg ...
                         beta_C gamma_C gamma_B gamma_mrnaC ...
                         gamma_Rg gamma_mrnaY k_minus k_plus K_a ...
@@ -84,18 +86,42 @@ function CRISPRi_Model
                         beta_C gamma_C gamma_B gamma_mrnaC ...
                         gamma_Rg gamma_mrnaY k_minus k_plus K_a ...
                         n mrnaY_0 foldRepression];
+                    
     presult_35 = fmincon(@(p) CRISPRi_Simulate_Error(t_min, YD_35, S0, p),...
         parameters_0, [], [], [], [], parameters_upper, parameters_lower );
     
-    % Update the foldRepression change
+    % Update the foldRepression to look at the worst-case repression
     foldRepression = 6;
     parameters_0(15) = foldRepression;
     parameters_upper(15) = foldRepression;
     parameters_lower(15) = foldRepression;
+    
     presult_6 = fmincon(@(p) CRISPRi_Simulate_Error(t_min, YD_6, S0, p),...
         parameters_0, [], [], [], [], parameters_upper, parameters_lower )
 
-    % Plot results for 6-fold repression
+    % Plot results for 35-fold repression
+    [t_35,S_35]=ode45(CRISPRiODE, [0,Tend], S0, options, presult_35);
+    S0=[0, 0, S_35(end,5), S_35(end,5), S_35(end,5)]';
+
+    % Running a second time beginning at steady-state
+    [t_35,S_35]=ode45(CRISPRiODE, [0,Tend], S0, options, presult_35);
+    B = k_plus*S_35(:,2).*S_35(:,3)/(k_minus+gamma_B);
+
+    CRISPRi_Plot(t_35, S_35(:,1), S_35(:,2), S_35(:,3), B, S_35(:,4))
+    title('Adjusted System Model of CRISPRi Repression (35-fold)')
+    ylim([0 2.1])
+    plot(t_35, S_35(:,5), 'color', [0.98 0.93 0.36], 'Linewidth', 1.5)
+    legend('dCas9 mRNA', 'dCas9', 'sgRNA', 'dCas9-sgRNA Complex',...
+    'YFP mRNA', 'unrepressed YFP mRNA', 'Location','East')     
+    save('Data_35FoldTimeSeries.mat', 't_35', 'S_35', 'B')
+
+    
+    % Plot results for 6-fold repression - start sgRNA and YFP at same
+    % steady-state
+    [t_6,S_6]=ode45(CRISPRiODE, [0,Tend], S0, options, presult_6);
+    S0=[0, 0, S_6(end,5), S_6(end,5), S_6(end,5)]';
+
+    % Running a second time beginning at steady-state
     [t_6,S_6]=ode45(CRISPRiODE, [0,Tend], S0, options, presult_6);
     B = k_plus*S_6(:,2).*S_6(:,3)/(k_minus+gamma_B);
 
@@ -104,27 +130,10 @@ function CRISPRi_Model
     plot(t_6, S_6(:,5), 'color', [0.98 0.93 0.36], 'Linewidth', 1.5)
     legend('dCas9 mRNA', 'dCas9', 'sgRNA', 'dCas9-sgRNA Complex',...
     'YFP mRNA', 'unrepressed YFP mRNA', 'Location','East')
-    ylim([0 2])    
-    CRISPRi_Plot(t_6, S_6(:,1), S_6(:,2), S_6(:,3), B, S_6(:,5))
-    title('Adjusted System Model without CRISPRi-YFP Interaction (6-fold)')
-    ylim([0 2])
-    save('6_fold_time_series.mat', 't_6', 'S_6', 'B')
-
-    % Plot results for 35-fold repression
-    [t_35,S_35]=ode45(CRISPRiODE, [0,Tend], S0, options, presult_35);
-    B = k_plus*S_35(:,2).*S_35(:,3)/(k_minus+gamma_B);
-
-    CRISPRi_Plot(t_35, S_35(:,1), S_35(:,2), S_35(:,3), B, S_35(:,4))
-    title('Adjusted System Model of CRISPRi Repression (35-fold)')
-    ylim([0 2])
-    plot(t_35, S_35(:,5), 'color', [0.98 0.93 0.36], 'Linewidth', 1.5)
-    legend('dCas9 mRNA', 'dCas9', 'sgRNA', 'dCas9-sgRNA Complex',...
-    'YFP mRNA', 'unrepressed YFP mRNA', 'Location','East')
-
-    CRISPRi_Plot(t_35, S_35(:,1), S_35(:,2), S_35(:,3), B, S_35(:,5))
-    title('Adjusted System Model without CRISPRi-YFP Interaction (35-fold)')
-    ylim([0 2])
-    save('35_fold_time_series.mat', 't_35', 'S_35', 'B')
+    ylim([0 2.1])    
+    save('Data_6FoldTimeSeries.mat', 't_6', 'S_6', 'B')
+    
+    S_6(end,5)
 
     % Final plot comparing simulated time-series to fmincon result
     figure; hold on
