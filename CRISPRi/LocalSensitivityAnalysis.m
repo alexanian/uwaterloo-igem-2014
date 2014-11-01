@@ -22,6 +22,6 @@ function ParameterRelSensitivity = ...
 
         YFP2 = System_YFP_Output(Y2);
         ParameterRelSensitivity(p) = ( Parameters(p) * ( YFP2 - YFP1 ) )...
-        / ( DP * YFP1 ) );
+        / ( DP * YFP1 );
     end
 end
