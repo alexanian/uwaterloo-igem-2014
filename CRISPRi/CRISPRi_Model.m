@@ -10,7 +10,7 @@ function CRISPRi_Model
 %
 % The wrapper calls many of the scripts within this directory, including:
 %
-%   CRISPRi_System.m:               model function to be used with ode45
+%   CRISPRi_DE_System.m:            model function to be used with ode45
 %   CRISPRi_Plot.m:                 plots graphs in a consistent way
 %   CRISPRi_Simulate_Time_Series.m: time series data based on Qi et al.
 %   CRISPRi_Simulate_Error:         computes error (model vs. time series)
@@ -38,7 +38,7 @@ function CRISPRi_Model
     % final n-fold repression: foldRepression
 
     % Set ODE simulation parameters
-    CRISPRiODE=@CRISPRi_System;
+    CRISPRiODE=@CRISPRi_DE_System;
     options=odeset('Refine', 6);
     Tend=300;
 

@@ -1,5 +1,5 @@
 function ParameterRelSensitivity = ...
-    LocalSensitivityAnalysis( DESystem, OutputSystem, Parameters, Y0, Tol )
+    LocalSensitivityAnalysis( DESystem, System_YFP_Output, Parameters, Y0, Tol )
     
     if nargin < 5
         Tol = 0.05;
@@ -8,7 +8,7 @@ function ParameterRelSensitivity = ...
     DE = @(T,S) DESystem(T, S, Parameters);
     T = [0 ; 1000];
     [~, Y1] = ode45( DE, T, Y0 );
-    Y1 = OutputSystem(Y1);
+    YFP1 = System_YFP_Output(Y1);
     
     ParameterRelSensitivity = zeros(size(Parameters));
     for p = 1:length(Parameters)
@@ -20,8 +20,8 @@ function ParameterRelSensitivity = ...
 
         [~, Y2] = ode45( DEP5, T, Y0 );
 
-        Y2 = OutputSystem(Y2);
-        ParameterRelSensitivity(p) = ( Parameters(p) * ( Y2(length(Y2)) - ...
-            Y1(length(Y1)) ) ) / ( DP * Y1(length(Y1)) );
+        YFP2 = System_YFP_Output(Y2);
+        ParameterRelSensitivity(p) = ( Parameters(p) * ( YFP2 - YFP1 ) )...
+        / ( DP * YFP1 ) );
     end
 end
