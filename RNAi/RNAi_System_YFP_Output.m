@@ -1,4 +1,4 @@
-function Sout = RNAi_System_YFP_Output( Sin )
-% Extracts repressed YFP statistic from CRISPRi_Model output
-    Sout = Sin(:,3);
+function Sout = RNAi_System_YFP_Output( S_in )
+% Extracts repressed YFP statistic from RNAi_DE_System output
+    Sout = S_in(:,3);
 end
